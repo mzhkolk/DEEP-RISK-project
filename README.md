@@ -1,16 +1,40 @@
-# DEEP-RISK-project
-DEEP RISK project: prediction of sudden cardiac death using multimodal AI
+# Optimizing-Patient-Selection-for-Primary-Prevention-ICD-Implantation
 
-The project consists of several models that were published before. The aim of each of the papers was to evaluate ML or DL approaches for the prediction of lethal malignant ventricular arrhythmia risk.
+## Project aim
+This project aims to extract features from ECG time-series data and develop machine learning models to predict the risk of ICD non-benefit.
 
-1. Kolk MZH, Ruipérez-Campillo S, Deb B, Bekkers EJ, Allaart CP, Rogers AJ, Van Der Lingen ACJ, Alvarez Florez L, Isgum I, De Vos BD, Clopton P, Wilde AAM, Knops RE, Narayan SM, Tjong FVY. Optimizing patient selection for primary prevention implantable cardioverter-defibrillator implantation: utilizing multimodal machine learning to assess risk of implantable cardioverter-defibrillator non-benefit. Europace. 2023 Aug 2;25(9):euad271. doi: 10.1093/europace/euad271. PMID: 37712675; PMCID: PMC10516624.
+## Features extraction
+The pre-processed ECGs were characterized by 65 unique features calculated using the tsfresh algorithm. The feature selection approach combined the Benjamini-Yekutieli procedure and a recursive feature elimination algorithm.
 
-2. Kolk MZH, Ruipérez-Campillo S, Alvarez-Florez L, Deb B, Bekkers EJ, Allaart CP, Van Der Lingen ACJ, Clopton P, Išgum I, Wilde AAM, Knops RE, Narayan SM, Tjong FVY. Dynamic prediction of malignant ventricular arrhythmias using neural networks in patients with an implantable cardioverter-defibrillator. EBioMedicine. 2024 Jan;99:104937. doi: 10.1016/j.ebiom.2023.104937. Epub 2023 Dec 19. PMID: 38118401; PMCID: PMC10772563.
+## Machine learning models
+The machine learning models used in this project are:
+```
+- Support vector machines (SVM)
+- Extreme gradient boosting algorithms (XGBoost)
+- Random forest (RF) classifiers
+```
 
-tba (under review)
-3. Kolk MZH, Ruipérez-Campillo S, Allaart CP, Wilde AAM, Knops RE, Narayan SM, Tjong FVY. Multimodal explainable artificial intelligence identifies patients with non-ischaemic cardiomyopathy at risk of lethal ventricular arrhythmias
+## Interpretation of predictions
+The interpretation of individual predictions was explained using the SHAP method and mean waveforms for predicted high risk and predicted low risk of ICD non-benefit in the external patient cohort were displayed.
 
-4. Deep behavioural representation learning reveals risk profiles for malignant ventricular arrhythmias
+## Requirements
+```
+- Python 3.6
+- tsfresh version 0.12.0
+- scikit-learn library version 1.1.1
+- XGBoost library version 1.6.2
+- numpy
+- pandas
+- h5py 3.7.0
+- pydicom
+```
 
-5. Deep behavioural representations uncover prognostic patterns for ventricular arrhythmia onset	
-
+## Usage
+The detailed description of ECG pre-processing and feature extraction is provided in the Supplemental Methods. To use this project:
+```
+1. Extract the ECG features using tsfresh version 0.12.0 in Python 3.6
+2. Perform the feature selection and model training using the scikit-learn and XGBoost libraries
+3. The internal model evaluation was performed by repeated stratified k-fold cross-validation with k=10 and 5 repeats
+4. The performance of the final model was evaluated on the external testing cohort
+5. The interpretation of individual predictions can be explained using the SHAP method.
+```
