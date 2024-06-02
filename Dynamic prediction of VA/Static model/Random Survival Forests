@@ -305,7 +305,7 @@
     }
    ],
    "source": [
-    "df = pd.read_csv(r'\\\\amc.intra\\data\\group\\diva\\EP-research\\Maarten Fleur\\Auto-encoder\\Importances\\Importances_AE.csv')\n",
+    "df = pd.read_csv(r'Importances_AE.csv')\n",
     "df = df.sort_values(by='diff2', ascending=True)\n",
     "\n",
     "df['Variable'] = df['Variable'].apply(lambda x: 'AE' + x[1:] if x.startswith('X') else x)\n",
@@ -338,9 +338,7 @@
     "ax.set_title('b. Dynamic model')\n",
     "\n",
     "# Save the plot as TIFF and PDF\n",
-    "output_tiff = r'\\\\amc.intra\\data\\group\\diva\\EP-research\\Maarten Fleur\\Auto-encoder\\Importances\\TV.tiff'\n",
-    "output_pdf = r'\\\\amc.intra\\data\\group\\diva\\EP-research\\Maarten Fleur\\Auto-encoder\\Importances\\TV.pdf'\n",
-    "#output_pdf = r'\\\\amc.intra\\data\\group\\diva\\EP-research\\Maarten Fleur\\Auto-encoder\\Importances\\TV.pptx'\n",
+    "output_tiff = 'TV.tiff'\n",
     "#\n",
     "plt.savefig(output_tiff, bbox_inches='tight' , dpi=300)\n",
     "plt.savefig(output_pdf, bbox_inches='tight' , dpi=300)\n",
