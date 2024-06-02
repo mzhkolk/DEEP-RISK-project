@@ -22,18 +22,11 @@ library(ggsci)
 library(dplyr)
 
 #load data
-#cohort = read.csv("//amc.intra/data/group/diva/EP-research/Maarten Fleur/ECG features_for_manuscript/COMBINED/cpiu_AT_AE_90days.csv")
-
-#cohort = read.csv("//amc.intra/data/group/diva/EP-research/Maarten Fleur/ECG features_for_manuscript/COMBINED/cpiu_mortality_90days.csv")
-
-cohort = read.csv("//amc.intra/data/group/diva/EP-research/Maarten Fleur/ECG features_for_manuscript/COMBINED/cpiu_AT_AE_90days_shock.csv")
-
+cohort = read.csv("cpiu_AT_AE_90days_shock.csv")
 cohort <- dplyr::select(cohort, -X)
-#cohort <- cohort[cohort$Interval < 50, ]
 
 #Normalize numeric features
 cols_to_scale <- c("Age", "BMI", "Sodium", "Potassium", "Kreatinine")
-
 scaled_train_or = scale(cohort[,cols_to_scale])
 cohort[,cols_to_scale] = scaled_train_or
 
@@ -41,10 +34,8 @@ formula <- as.formula(paste("EventDuringCPIU ~ Age+Sex+AtrialArrhythmia+OHCA+CRT
 
 
 cohort$EventDuringCPIU = as.factor(cohort$EventDuringCPIU)
-
 cats        <- as.integer(c(rep(1, 44)))
 cat_weights <- c(1.0) # arbitrary here, so it doesn't impact training
-
 categories <- list()
 categories$categories.weights <- cat_weights
 categories$var.assignments    <- cats
@@ -52,12 +43,8 @@ categories$var.assignments    <- cats
 cohort <- cohort %>%  
     mutate(PatientID = as.factor(PatientID))
 
-
-train_patients_arr <- read.csv('//amc.intra/data/group/diva/EP-research/Maarten Fleur/Auto-encoder/Traintestsplit/train_patients.csv')$patient_id
-     
-test_patients_arr <- read.csv('//amc.intra/data/group/diva/EP-research/Maarten Fleur/Auto-encoder/Traintestsplit/test_patients.csv')$patient_id
-     
-library(dplyr)
+train_patients_arr <- read.csv('train_patients.csv')$patient_id
+test_patients_arr <- read.csv('test_patients.csv')$patient_id
 
 # Convert patient IDs to factors
 cohort <- cohort %>% 
@@ -66,16 +53,13 @@ cohort <- cohort %>%
 # Select corresponding patients from cohort
 train_cohort <- cohort %>% filter(PatientID %in% train_patients_arr)
 test_cohort <- cohort %>% filter(PatientID %in% test_patients_arr)
-
 ```
 
 2.  Grid search model
 
 ```{r}
 library(caret)
-
 colnames(train_cohort)[colnames(train_cohort) == 'PatientID'] <- 'pid'
-
 # Define a range of values for ntree and mtry
 ntree_range <- c(50, 100, 150, 200)
 mtry_range <- c(2, 4, 6)
@@ -161,7 +145,6 @@ train_cohort$risk <- NA
 auc_df <- data.frame(fold = numeric(), auc = numeric())
 auc_df_fold <- data.frame(fold = numeric(), cpiu = numeric(), auc_auc = numeric(), auc_lci = numeric(), auc_uci = numeric())
 
-
 for(i in 1:5){
   #Assign train and test folds
   testing <- train_cohort[train_cohort$fold == i,]
@@ -204,7 +187,7 @@ std_cv <- aggregate(auc_df_fold[, c('auc')],
 merged_df <- merge(means_cv, std_cv, by = "Group.1")
 colnames(merged_df) <- c("cpiu", "mean_auc", "std_auc")
 
-write.csv(merged_df, file = "//amc.intra/data/group/diva/EP-research/Maarten Fleur/Auto-encoder/Traintestsplit/RF-SLAM_Interval_validation_90.csv", row.names = FALSE)
+write.csv(merged_df, file = "RF-SLAM_Interval_validation_90.csv", row.names = FALSE)
 ```
 
 4.  Train model
@@ -227,14 +210,13 @@ trained_model <- rfSLAM::rfsrc(formula, data = train_cohort, ntree = 100, na.act
 
 ```{r}
 # Set the number of bootstrap iterations
-num_iterations <- 100
+num_iterations <- iter
 
 # Initialize an empty data frame to store the results
 auc_df_fold <- data.frame()
 
 n <- unique(test_cohort$PatientID)
 n_sample <- round(0.80 * length(n)) # number of patient IDs to sample (rounded to the nearest integer)
-
 
 for (i in 1:num_iterations) {
   test_idx <- sample(unique(test_cohort$PatientID), size = n_sample, replace = TRUE)
@@ -285,8 +267,6 @@ merged_df <- merge(means_bt, std_bt, by = "Group.1")
 merged_df <- merged_df[merged_df$Group.1 < 40, ]
 
 colnames(merged_df) <- c("cpiu", "mean_auc", "std_auc")
-
-write.csv(merged_df, file = "//amc.intra/data/group/diva/EP-research/Maarten Fleur/Auto-encoder/Traintestsplit/Shock_RFSLAM.csv", row.names = FALSE)
 
 ```
 
@@ -385,8 +365,6 @@ g2_prim <- ggplot(db2, aes(x = risk)) +
         panel.border = element_rect(colour = "black", fill=NA, size=1))
 g_prim <- arrangeGrob(g1_prim, g2_prim, respect = TRUE, heights = c(1, 0.6), ncol = 1)
 
-
-path <- paste0("//amc.intra/data/group/diva/EP-research/Maarten Fleur/Auto-encoder/Calibration/Calibration_plot.tiff")
-path <- paste0("//amc.intra/data/group/diva/EP-research/Maarten Fleur/Auto-encoder/Manuscript/Lancet eBioMedicine/Supplementary Figure 5. Calibration plot.pdf")
+path <- paste0("Calibration_plot.tiff")
 
 ggsave(path, plot = g_prim, dpi = 300, width = 10, height = 12)
