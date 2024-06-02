@@ -1,0 +1,1 @@
+1. Kolk MZH, Ruipérez-Campillo S, et al., Dynamic prediction of malignant ventricular arrhythmias using neural networks in patients with an implantable cardioverter-defibrillator. EBioMedicine. 2024 Jan;99:104937. doi: 10.1016/j.ebiom.2023.104937. Epub 2023 Dec 19. PMID: 38118401; PMCID: PMC10772563.
